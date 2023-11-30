@@ -49,7 +49,7 @@
 # *What resources and references have you used for this project?*
 # 📝 <!-- Answer Below -->
 
-# In[50]:
+# In[33]:
 
 
 import pandas as pd
@@ -75,13 +75,13 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import r2_score
 
 
-# In[51]:
+# In[34]:
 
 
 data = pd.read_csv('data/global-data-on-sustainable-energy (1).csv')
 
 
-# In[52]:
+# In[35]:
 
 
 print(data.head())  # View the first few rows of the dataset
@@ -89,7 +89,7 @@ print(data.info())  # Get information about columns and data types
 print(data.describe())  # Summary statistics for numerical columns
 
 
-# In[53]:
+# In[36]:
 
 
 # Check for missing values
@@ -97,27 +97,27 @@ print(data.isnull().sum())
 
 
 
-# In[54]:
+# In[37]:
 
 
 # Check for duplicate rows
 print(data.duplicated().sum())
 
 
-# In[55]:
+# In[38]:
 
 
 data_without_nan = data.dropna()
 print(data_without_nan.isnull().sum())
 
 
-# In[56]:
+# In[39]:
 
 
 print(data.columns)
 
 
-# In[57]:
+# In[40]:
 
 
 selected_columns = ['Electricity from fossil fuels (TWh)', 'Electricity from nuclear (TWh)', 'Electricity from renewables (TWh)']
@@ -134,7 +134,7 @@ print(corr_matrix)
 
 # # There's a notable positive relationship between electricity generation from fossil fuels and renewables, suggesting some degree of dependency or association between them. Nuclear energy generation shows a moderate positive relationship with electricity generation from fossil fuels and a weaker relationship with renewables.
 
-# In[58]:
+# In[41]:
 
 
 plt.figure(figsize=(8, 6))  # Set the size of the figure
@@ -143,7 +143,7 @@ plt.title('Correlation Matrix Heatmap')
 plt.show()
 
 
-# In[60]:
+# In[43]:
 
 
 energy_trends = data[['Year', 'Electricity from fossil fuels (TWh)', 'Electricity from nuclear (TWh)', 'Electricity from renewables (TWh)']]
@@ -166,7 +166,7 @@ plt.show()
 
 #  This was intersting to see that fossil fuels, something we will eventually run out of, has been increasing tremendously since 2000. Renewable energy is not something that seems to put into consideration.
 
-# In[61]:
+# In[44]:
 
 
 co2_emissions = data['Value_co2_emissions_kt_by_country']
@@ -184,7 +184,7 @@ plt.show()
 
 #  When we pair this with the energy consumption trend over time, we know that fossil fuel is a favorite when it comes to generating electricity, but that also means the CO2 emmisions from burning fossil fuels is not good for the environment at all.
 
-# In[62]:
+# In[45]:
 
 
 grouped_by_country = data.groupby('Entity')['Value_co2_emissions_kt_by_country'].sum().reset_index()
@@ -198,7 +198,7 @@ print(top_10_emitting_countries)
 # The value of co2 emissions is in scientific notation. For example if we look at China, 1.527328e+08 KT, that is equivalent to 152,732,800 kilotons of CO2 emissions. 
 # My next graph will be CO2 emissions for the top 3 countries with the highest emissions. This visualization could help observe the trajectory of CO2 emissions over time.
 
-# In[64]:
+# In[46]:
 
 
 countries_to_plot = ['China', 'United States', 'India']
@@ -248,33 +248,35 @@ plt.show()
 # We begin Machine learning
 # Will start by preprocessing the data, like checking for missing values.
 
-# In[65]:
+# # this dataset encapsulates the carbon dioxide emissions generated from burning coal for producing electricity power in the United States of America between 1973 and 2016
+
+# In[47]:
 
 
 c02 = pd.read_csv('data/co2.csv')
 c02.head(5)
 
 
-# In[66]:
+# In[48]:
 
 
 c02.info()
 
 
-# In[67]:
+# In[49]:
 
 
 c02['Month'] = c02.YYYYMM.astype(str).str[4:6].astype(float)
 c02['Year'] = c02.YYYYMM.astype(str).str[0:4].astype(float)
 
 
-# In[68]:
+# In[50]:
 
 
 c02.shape
 
 
-# In[69]:
+# In[51]:
 
 
 c02.drop(['YYYYMM'], axis=1, inplace=True)
@@ -284,56 +286,56 @@ c02.tail(5)
 
 # We use Pandas to import the CSV file. We notice that the dataframe contains a column 'YYYYMM' that needs to be separated into 'Year' and 'Month' column. In this step, we will also remove any null values that we may have in the dataframe. Finally, we will retrieve the last five elements of the dataframe to check if our code worked. And it did!
 
-# In[70]:
+# In[52]:
 
 
 print(c02.dtypes)
 
 
-# In[71]:
+# In[53]:
 
 
 c02.isnull().sum()
 
 
-# In[72]:
+# In[54]:
 
 
 c02.shape
 
 
-# In[73]:
+# In[55]:
 
 
 X = c02.loc[:,['Month', 'Year']].values
 y = c02.loc[:,'Value'].values
 
 
-# In[74]:
+# In[56]:
 
 
 y
 
 
-# In[75]:
+# In[57]:
 
 
 c02_dmatrix = xgb.DMatrix(X,label=y)
 
 
-# In[76]:
+# In[58]:
 
 
 c02_dmatrix
 
 
-# In[77]:
+# In[59]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 
-# In[78]:
+# In[60]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=5)
@@ -343,7 +345,7 @@ print(X_test.shape)
 print(y_test.shape)
 
 
-# In[79]:
+# In[61]:
 
 
 reg_mod = xgb.XGBRegressor(
@@ -359,7 +361,7 @@ reg_mod.fit(X_train, y_train)
 
 # After training the model, we'll check the model training score.
 
-# In[80]:
+# In[62]:
 
 
 scores = cross_val_score(reg_mod, X_train, y_train,cv=10)
@@ -368,7 +370,7 @@ print("Mean cross-validation score: %.2f" % scores.mean())
 
 # the model predicted the target variable very accurately across the different subsets of the data used for training and testing. This high score generally indicates that the model is performing well and is able to generalize effectively to unseen data.
 
-# In[81]:
+# In[63]:
 
 
 reg_mod.fit(X_train,y_train)
@@ -376,14 +378,14 @@ reg_mod.fit(X_train,y_train)
 predictions = reg_mod.predict(X_test)
 
 
-# In[83]:
+# In[64]:
 
 
 rmse = np.sqrt(mean_squared_error(y_test, predictions))
 print("RMSE: %f" % (rmse))
 
 
-# In[85]:
+# In[65]:
 
 
 from sklearn.metrics import r2_score
@@ -393,14 +395,14 @@ print("R_Squared Score : %f" % (r2))
 
 # As you can see, the these statistical metrics have reinstated our confidence about this model. RMSE ~ 4.95 R-Squared Score ~ 98.8% Now, let's visualize the original data set using the seaborn library.
 
-# In[86]:
+# In[66]:
 
 
 plt.figure(figsize=(10, 5), dpi=80)
 sns.lineplot(x='Year', y='Value', data=c02)
 
 
-# In[87]:
+# In[67]:
 
 
 plt.figure(figsize=(10, 5), dpi=80)
@@ -414,7 +416,7 @@ plt.show()
 
 # Finally, the last piece of code will print the forecasted carbon dioxide emissions until 2025.
 
-# In[88]:
+# In[68]:
 
 
 plt.figure(figsize=(10, 5), dpi=80)
@@ -423,4 +425,89 @@ df['date'] = pd.date_range(start='8/1/2016', periods=len(df), freq='M')
 sns.lineplot(x='date', y='pred', data=df)
 plt.title("Carbon Dioxide Emissions - Forecast")
 plt.show()
+
+
+# In[69]:
+
+
+selected_countries_data = selected_countries_data.dropna()
+
+
+# In[72]:
+
+
+# Filter data for the United States (assuming 'Entity' column contains country names)
+usa_data = data[data['Entity'] == 'United States']
+
+# Drop rows with missing values in the selected columns (Year and CO2 emissions)
+usa_data = usa_data.dropna(subset=['Year', 'Value_co2_emissions_kt_by_country'])
+
+# Extracting features and target variable for the USA
+X_usa = usa_data[['Year']]  # Features: Year
+y_usa = usa_data['Value_co2_emissions_kt_by_country']  # Target variable: CO2 Emissions
+
+# Splitting the data into training and testing sets
+X_train_usa, X_test_usa, y_train_usa, y_test_usa = train_test_split(X_usa, y_usa, test_size=0.2, random_state=42)
+
+# Initialize and fit a linear regression model for the USA
+regression_model_usa = LinearRegression()
+regression_model_usa.fit(X_train_usa, y_train_usa)
+
+# Predict CO2 emissions for future years for the USA (2000 to 2029)
+future_years_usa = [[year] for year in range(2000, 2030)]
+predicted_emissions_usa = regression_model_usa.predict(future_years_usa)
+
+# Plotting historical data and predicted future trends for the USA
+plt.figure(figsize=(10, 6))
+plt.scatter(X_usa, y_usa, label='Historical Data')
+plt.plot(future_years_usa, predicted_emissions_usa, linestyle='--', color='red', label='Predicted Trend')
+plt.xlabel('Year')
+plt.ylabel('CO2 Emissions (kt)')
+plt.title('CO2 Emissions Over Time - USA with Future Predictions')
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+
+# In[101]:
+
+
+china_data = data[data['Entity'] == 'China']
+
+# Drop rows with missing values in the selected columns (Year and CO2 emissions)
+china_data = china_data.dropna(subset=['Year', 'Value_co2_emissions_kt_by_country'])
+
+# Extracting features and target variable for China
+X_china = china_data[['Year']]  # Features: Year
+y_china = china_data['Value_co2_emissions_kt_by_country']  # Target variable: CO2 Emissions
+
+# Splitting the data into training and testing sets
+X_train_china, X_test_china, y_train_china, y_test_china = train_test_split(X_china, y_china, test_size=0.2, random_state=42)
+
+# Initialize and fit a linear regression model for China
+regression_model_china = LinearRegression()
+regression_model_china.fit(X_train_china, y_train_china)
+
+# Predict CO2 emissions for future years for China (2000 to 2029)
+future_years_china = [[year] for year in range(2000, 2030)]
+predicted_emissions_china = regression_model_china.predict(future_years_china)
+
+# Plotting historical data and predicted future trends for China
+plt.figure(figsize=(10, 6))
+plt.scatter(X_china, y_china, label='Historical Data')
+plt.plot(future_years_china, predicted_emissions_china, linestyle='--', color='red', label='Predicted Trend')
+plt.xlabel('Year')
+plt.ylabel('CO2 Emissions (kt)')
+plt.title('CO2 Emissions Over Time - China with Future Predictions')
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+
+# In[99]:
+
+
+get_ipython().system('jupyter nbconvert --to python source.ipynb')
 
